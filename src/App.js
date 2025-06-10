@@ -5,15 +5,28 @@ function App() {
 
   const [data, setData] = useState({})
   const [location, setLocation] = useState('')
-
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=cc07ab9b57a504cff72992190bc2bc4e`
+  const [cityLabel, setcityLabel] = useState('')
 
   const SearchLocation = (event) => {
+
+    const url = `http://api.openweathermap.org/geo/1.0/direct?q=%${location}&limit=1&appid=cc07ab9b57a504cff72992190bc2bc4e`
+
     if (event.key === 'Enter') {
       axios.get(url).then((Response) => {
-        setData(Response.data)
-        console.log(Response.data)
-    })
+        if (Response.data.length > 0) {
+          const {lat,lon} = Response.data[0];
+          const weatherurl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=cc07ab9b57a504cff72992190bc2bc4e`
+
+          axios.get(weatherurl).then(weatherResponse => {
+            setData(weatherResponse.data)
+            setcityLabel(location)
+            console.log(weatherResponse.data)
+          });
+        } else {
+          console.log('Location Not Found')
+        }
+    });
+
     setLocation('')
     }
   }
@@ -34,7 +47,7 @@ function App() {
         <div className="top">
 
           <div className="location">
-            <p>{data.name}</p>
+            <p>{cityLabel}</p>
           </div>
 
           <div className="temp">
