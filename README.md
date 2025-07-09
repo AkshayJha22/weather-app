@@ -13,3 +13,5 @@ Users can search for any city and get current weather data including temperature
 - 🎨 **Responsive & Stylish UI** — Clean layout with custom fonts and a background image.
 
 ---
+
+
