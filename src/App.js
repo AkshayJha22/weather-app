@@ -1,6 +1,9 @@
 import React, {useState} from "react";
 import axios from "axios";
 
+// OpenWeatherMap API key, read from .env at build time (see README). Never commit the key itself.
+const API_KEY = process.env.REACT_APP_OPENWEATHER_KEY
+
 function App() {
 
   const [data, setData] = useState({})
@@ -9,13 +12,17 @@ function App() {
 
   const SearchLocation = (event) => {
 
-    const url = `http://api.openweathermap.org/geo/1.0/direct?q=%${location}&limit=1&appid=cc07ab9b57a504cff72992190bc2bc4e`
+    const url = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(location)}&limit=1&appid=${API_KEY}`
 
     if (event.key === 'Enter') {
+      if (!API_KEY) {
+        console.error('REACT_APP_OPENWEATHER_KEY is not set: copy .env.example to .env and add your key')
+        return
+      }
       axios.get(url).then((Response) => {
         if (Response.data.length > 0) {
           const {lat,lon} = Response.data[0];
-          const weatherurl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=cc07ab9b57a504cff72992190bc2bc4e`
+          const weatherurl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`
 
           axios.get(weatherurl).then(weatherResponse => {
             setData(weatherResponse.data)
@@ -74,7 +81,7 @@ function App() {
           </div>
 
           <div className="wind">
-            {data.wind ? <p className="bold">{data.wind.speed} MPH</p> : null}
+            {data.wind ? <p className="bold">{data.wind.speed} m/s</p> : null}
             <p>Wind Speed</p>
           </div>
         </div>}
